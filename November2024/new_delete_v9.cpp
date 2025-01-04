@@ -154,10 +154,10 @@ int main() {
     }
     std::cout << "notherfucker" << std::endl;
     
-    Person p2("Anna", "Subbotka");
+    Person* p2 = new Person("Anna", "Subbotka");
     
-    Person p3 = p2; //Copy constructing
-    Person p4 {};
+    Person* p3 = p2; //Copy constructing
+    Person* p4 {};
     p4 = p3;   //Copy assignment operator
     
     Person* p5 = new Person("Victor", "Pavlic");
@@ -173,4 +173,5 @@ int main() {
     
     return 0;
 }
+
 
