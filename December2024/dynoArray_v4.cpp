@@ -28,19 +28,17 @@ public:
         initPtr = storage;
         currentSize = size;
     }
-    void inflate(int inc = 8) {
-        char* temp = (char*)malloc(index + inc);
+    void inflate(int inc = 8) {    //minimal storage to store double or a long int
+        char* temp = (char*)malloc(currentSize + inc);
         memset(temp, 0, currentSize + inc);
         memcpy(temp, storage, currentSize);
-        free(storage);
+        free(storage);        //release the storage beofore assigning this pointer to a newly allocated memory
         storage = temp;
         initPtr = storage;
         currentSize += inc;
 
     }
     void append(char c) {
-        
-        if("difference, free bytes are > 2")
         storage += index;
         *storage = c;
         printf("the content of storage is %c\n", *storage);
@@ -54,43 +52,28 @@ public:
         
     }
     void append(const char* s) {
-        puts("entering append string");
-        printf("the storage is now %p\n", storage);
-        puts("inflating");
-        printf("the size of the passing string is %i\n", siseofCstring(s));
-        inflate(siseofCstring(s));
-        printf("the storage is now %p\n", storage);
+        if(siseofCstring(s) > currentSize) {
+            printf("the size of storage is %i, the size of the string is %i\n", currentSize, siseofCstring(s));
+            inflate(siseofCstring(s));
+        }
         printf("the storage size is now %i\n", currentSize);
         printf("the index is now %i\n", index);
         
-        puts("appending");
-        
-        int localindex = 0;
         
         //char* temp = (char*)s;      //temporary string to avoid const
         char c;
-        while((c = *(s + localindex)) != '\0') {
-            *(storage + index) = c;       //lvalue expression
-            localindex++;
+        while((c = *s) != '\0') {
+            *storage = c;
+            storage++;       //increments the member storage
+            s++;
             index++;
         }
         printf("the index is now %i\n", index);
         printf("the storage is now %p\n", storage);
         printf("the initPtr is now %p\n", initPtr);
+        printf("the currentSize is now %i\n", currentSize);
         *(storage + index) = '\0';
         
-        char d;
-        char* cPtr = storage;
-        while((d = *cPtr) != '\0') {
-            printf("%c", d);       //lvalue expression
-            cPtr++;            //incrementing storage pointer to read from const char* string literal
-        }
-        puts("\0");
-        
-        puts("leaving append string");
-    }
-    const char* str() {
-        return (const char*)storage;
     }
     void print() {
         const char* s = (const char*)initPtr;
@@ -119,9 +102,9 @@ int main(int argc, const char* argv[]) {
     char c2 = 'b';
     char c3 = 'c';
     
-    const char* str1 = "asldkjfh";     //9bytes + '\0'
-    const char* str2 = "falskdh 23412 ghjg ";   // 19 + '\0'
-    const char* str3 = "41234 asldkjfh dddddd ";    //22 + '\0'
+    const char* str1 = "falskdh asldkjfh alsjkdhf ";
+    const char* str2 = "falskdh 23412 ghjg ";
+    const char* str3 = "41234 asldkjfh dddddd ";
     
     typedef lint::CharDynoArray charray;
     
@@ -132,22 +115,12 @@ int main(int argc, const char* argv[]) {
     //ch1.append(c3);
 
     ch1.append(str1);
-    ch1.append(str2);
-    ch1.append(str3);
     
     ch1.print();
     
-    const char* str4 = ch1.str();
     
-    char c;
-    while((c = *str4) != '\0') {
-        printf("%c", c);       //lvalue expression
-        str4++;            //incrementing storage pointer to read from const char* string literal
-    }
-    puts("\0");
     return 0;
 }
-
 
 
 
