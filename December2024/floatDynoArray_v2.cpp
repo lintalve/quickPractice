@@ -5,7 +5,7 @@
 namespace lint {
 
 class FloatDynoArray {
-    static const int size = 9;
+    static const int size = 8;
     float* storage = nullptr;
     unsigned int index {};
     unsigned int totalSize;
@@ -17,30 +17,42 @@ public:
         currentSize = size;
         totalSize = size;
     }
-    void inflate(size_t inc = 8) {
-        printf("entering inflate function");
-        float* temp = (float*)malloc(index + inc);
-        memset(temp, 0, index + inc);
-        memcpy(temp, storage, index);
+    void inflate(int inc = 4) {
+        puts("\n");
+        printf("entering inflate function\n");
+        float* temp = (float*)malloc(index * sizeof(float) + inc);
+        memset(temp, 0, index * sizeof(float) + inc);
+        memcpy(temp, storage, index * sizeof(float));
         free(storage);
         storage = temp;
-        totalSize = index + inc;
+        totalSize = index * sizeof(float) + inc;
+        printf("the total size is now %i\n", totalSize);
+        
+        printf("exiting append float function\n");
+        puts("\n");
+        
         
     }
     void append(float f) {
         printf("entering append float function\n");
-        printf("the total size is now %i bytes\n", totalSize);
+        
+        printf("the total size is now %i\n", totalSize);
         printf("storage is now %p\n", storage);
         printf("the index is now %i\n", index);
-        if((totalSize - index * sizeof(float)) < sizeof(float)) inflate(sizeof(f));
-        printf("the unused space is %i bytes\n", totalSize - index * sizeof(float));
-        *(storage + index) = f;
-        printf("and the contend in the index null is %f\n", *(storage + index));
+        if((totalSize - index * sizeof(float)) < sizeof(float)) inflate(sizeof(float));
+        //pointer arithmentic
+        printf("assigning an element into the pointer of index %i\n", index);
+        *(storage + index * sizeof(float)) = f;
+        printf("and the contend in the index %i is %f\n", index, *(storage + index * sizeof(float)));
+        printf("the used size is now %lu\n", (totalSize - (totalSize - (index + 1) * sizeof(float))));
+        printf("the total size is now %i\n", totalSize);
         printf("storage is now %p\n", storage);
         printf("the index is now %i\n", index);
-        printf("the total size is now %i bytes\n", totalSize);
-        printf("exiting append float function\n");
+        
         index++;
+        printf("the unused space is %lu bytes\n", totalSize - index * sizeof(float));
+        printf("exiting append float function\n");
+        puts("\n");
         
     }
     void append(float f[], size_t a_size) {
@@ -51,7 +63,7 @@ public:
         }
         currentSize += a_size;
     }
-    float gett(int index) {
+    float get(int index) {
         return *storage;
     }
     float& operator[](int index) {
@@ -62,9 +74,9 @@ public:
     }
     void print() {
         for(int i=0; i<index; i++) {
-            printf("%f", *(storage + i));
+            printf("%f ", *(storage + i*sizeof(float)));
         }
-    puts("\0");
+    puts("\n");
     }
 };
 
@@ -73,6 +85,7 @@ public:
 
 int main(int arc, const char* argv[]) {
     typedef lint::FloatDynoArray Farray;
+    puts("\n");
     
     Farray fa1;
     
@@ -87,3 +100,4 @@ int main(int arc, const char* argv[]) {
     
     
 }
+
