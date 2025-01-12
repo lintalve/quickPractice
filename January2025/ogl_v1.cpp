@@ -1,3 +1,8 @@
+/*
+ This file compiles with
+        clang++ -std=c++20 -o ogl ogl_v2.cpp -framework OpenGL -lglfw -lGLEW
+    and works fine
+ */
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <iostream>
