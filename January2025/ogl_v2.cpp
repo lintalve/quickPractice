@@ -1,3 +1,9 @@
+/*
+ Compiles with:
+ clang++ -std=c++20 -o ogl ogl_v2.cpp -framework OpenGL -lglfw -lGLEW
+ Workes on my Macbook Pro 2019
+ */
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
