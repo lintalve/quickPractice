@@ -83,23 +83,66 @@ public:
                 if(array[0] == 'v' && array[1] == ' ') {
                     int i=2;
                     int j=0;
-                    char arr[13] {};
+                    char arr1[13] {};
                     double d1 {};
                     while(array[i] != ' ') {
-                        arr[j] = array[i];
-                        printf("%c", arr[j]);
+                        arr1[j] = array[i];
+                        printf("%c", arr1[j]);
                         i++;
                         j++;
                     }
+                    
                     //float strtof(const char *nptr, char **endptr);
-                    d1 = strtod(arr, NULL);
+                    d1 = strtod(arr1, NULL);
                     //code from append float
                     if((totalSize - (index * 4)) < 4) inflate(8);
                     *(storage + index) = (float)d1;
                     last = index;
                     index++;
+                    printf("\ndouble printed as float %f\n", d1);
+                    //=======================
+                    int k = i+1;
+                    int l = 0;
+                    char arr2[13] {};
+                    double d2 {};
+                    while(array[k] != ' ') {
+                        arr2[l] = array[k];
+                        printf("%c", arr2[l]);
+                        k++;
+                        l++;
+                    }
                     
-                    printf("\ndouble printed as float %f", d1);
+                    //float strtof(const char *nptr, char **endptr);
+                    d2 = strtod(arr2, NULL);
+                    //code from append float
+                    if((totalSize - (index * 4)) < 4) inflate(8);
+                    *(storage + index) = (float)d2;
+                    last = index;
+                    index++;
+                    printf("\ndouble printed as float %f\n", d2);
+                    //=======================
+                    
+                    int m = k+1;
+                    int n = 0;
+                    char arr3[13] {};
+                    double d3 {};
+                    while(array[m] != '\0') {
+                        arr3[n] = array[m];
+                        printf("%c", arr3[n]);
+                        m++;
+                        n++;
+                    }
+                    
+                    //float strtof(const char *nptr, char **endptr);
+                    d3 = strtod(arr3, NULL);
+                    //code from append float
+                    if((totalSize - (index * 4)) < 4) inflate(8);
+                    *(storage + index) = (float)d3;
+                    last = index;
+                    index++;
+                    printf("\ndouble printed as float %f\n", d3);
+                    //=======================
+                    
                     puts("\n");
                     str = strdup(array);  //allocates memory for the str, copys old string into the new one
                     printf("%s\n", str);
