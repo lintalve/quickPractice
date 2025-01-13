@@ -24,55 +24,21 @@ public:
         totalSize = size;
     }
     void inflate(int inc = 4) {
-        puts("\n");
-        printf("entering inflate function\n");
         float* temp = (float*)malloc(index * 4 + inc);
         memset(temp, 0, index * 4 + inc);
         memcpy(temp, storage, index * 4);
         free(storage);
         storage = temp;
         totalSize = index * 4 + inc;
-        printf("the total size is now %i\n", totalSize);
-        
-        printf("exiting inflate float function\n");
-        puts("\n");
-        
-        
     }
     void append(float f) {
-        printf("entering append float function\n");
-        printf("the total size is now %i\n", totalSize);
-        printf("storage is now %p\n", storage);
-        printf("the index is now %i\n", index);
         if((totalSize - (index * 4)) < 4) inflate(8);
-        //pointer arithmentic
-        printf("assigning an element into the pointer of index %i\n", index);
         *(storage + index) = f;
-        printf("and the contend in the index %i is %f\n", index, *(storage + index));
-        printf("the used size is now %i\n", (totalSize - (totalSize - (index + 1) * 4)));
-        printf("the total size is now %i\n", totalSize);
-        printf("storage is now %p\n", storage);
-        printf("the index is now %i\n", index);
         last = index;
         index++;
-        
-        printf("the index is now %i\n", index);
-        printf("the last is now %i\n", last);
-        printf("the unused space is %i bytes\n", totalSize - (index * 4));
-        printf("and the contend in the index %i is %f\n", index-1, *(storage + (index-1)));
-        printf("exiting append float function\n");
-        puts("\n");
-        
     }
     void append(float ff[], int a_element_size) {
-        printf("entering append float array function\n");
-        printf("storage is now %p\n", storage);
-        printf("the index is now %i\n", index);
-        printf("the last is now %i\n", last);
-        printf("the total size is now %i\n", totalSize);
         if((totalSize - index * 4) < a_element_size) inflate(a_element_size * 4);
-        printf("storage is now %p\n", storage);
-        printf("the index is now %i\n", index);
         float* ptr = storage + index;
         for(int i=0; i < a_element_size; i++) {
             *ptr = ff[i];
@@ -82,11 +48,6 @@ public:
             index++;
         }
         usedSpace += a_element_size * 4;
-        printf("storage is now %p\n", storage);
-        printf("the index is now %i\n", index);
-        printf("the last is now %i\n", last);
-        printf("the total size is now %i\n", totalSize);
-        printf("exiting append float array function\n");
         ptr = nullptr;
         puts("\n");
     }
@@ -114,7 +75,7 @@ public:
     }
     void readObj(const char* path) {
         if(isObj(path)) {
-            FILE* fp = fopen("cube1.obj", "r");
+            FILE* fp = fopen(path, "r");
             puts("shit yeah");
             const char* str;
             char array[128] {};
@@ -122,14 +83,23 @@ public:
                 if(array[0] == 'v' && array[1] == ' ') {
                     int i=2;
                     int j=0;
-                    char arr[16] {};
-                    const char* s = nullptr;
+                    char arr[13] {};
+                    double d1 {};
                     while(array[i] != ' ') {
                         arr[j] = array[i];
                         printf("%c", arr[j]);
                         i++;
                         j++;
                     }
+                    //float strtof(const char *nptr, char **endptr);
+                    d1 = strtod(arr, NULL);
+                    //code from append float
+                    if((totalSize - (index * 4)) < 4) inflate(8);
+                    *(storage + index) = (float)d1;
+                    last = index;
+                    index++;
+                    
+                    printf("\ndouble printed as float %f", d1);
                     puts("\n");
                     str = strdup(array);  //allocates memory for the str, copys old string into the new one
                     printf("%s\n", str);
@@ -260,10 +230,12 @@ int main(int arc, const char* argv[]) {
     fa1.print();
     puts("\n######################## readObj(); ##########################\n");
     fa1.isObj(".obj");
-    fa1.readObj("cube.obj");
+    fa1.readObj("cube1.obj");
+    fa1.print();
     return 0;
     
 }
+
 
 
 
