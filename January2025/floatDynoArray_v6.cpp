@@ -10,7 +10,7 @@
 namespace lint {
 
 class FloatDynoArray {
-
+                //this is an implementation, not to make sense to a user
     static const int size = 8;
     float* storage = nullptr;
     int index {};     //stores location of the next element after existing
@@ -89,6 +89,28 @@ public:
         printf("exiting append float array function\n");
         ptr = nullptr;
         puts("\n");
+    }
+    bool isObj(const char* path) const {   //this pointer is copied inside the function;
+        char* localpath = (char*)path;
+        int length {};
+        while(*localpath != '\0') {
+            length++;
+            localpath++;
+        }
+        printf("length is %i\n", length);
+        //   RESET the const char* path POINTER!!
+        localpath = (char*)path + (length-1);
+        char ext[4];
+        for(int i=3; i>=0; i--) {
+            ext[i] = *localpath;
+            printf("%c ", *localpath);
+            localpath--;
+        }
+        
+        if(ext[0] == '.' && ext[1] == 'o' && ext[2] == 'b' && ext[3] == 'j') {
+            return true;
+        } else { return false }
+        
     }
     int getIndex() const {
         return index;
@@ -190,8 +212,7 @@ int main(int arc, const char* argv[]) {
     printf("adress %p %f\n", fa1.getStorage()+2,  *(fa1.getStorage()+2));
     printf("index is %i\n", fa1.getIndex());
     printf("index is %p\n", fa1.getStorage());
-    puts("\n######################### getAt(int indx);
-################################\n");
+    puts("\n######################### getAt(int indx); ################################\n");
 
     printf("float %f at index %i\n", fa1.getAt(3), 3);
     
@@ -210,9 +231,13 @@ int main(int arc, const char* argv[]) {
     
     fa1.insert(8.34, 4);
     fa1.print();
+    puts("\n######################## readObj(); ##########################\n");
+    fa1.isObj(".obj");
+    //fa1.readObj(".obg");
     return 0;
     
 }
+
 
 
 
