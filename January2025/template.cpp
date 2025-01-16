@@ -1,5 +1,10 @@
 /*
- In this file
+ In this file we still avoiding the the abstractions
+ and ownership issues. By ownership I mean
+ ownership by the object(object can delete inner parts)
+ ownership by client programmer: your library container returns
+ its content and transfer ownership(responsability to delete(to aavoid leaks for example))
+ to a client code (Code outside your library code)
  This is still line namespace to use everywhere, especially
  on arduino boards, those with AVR8 and ARM cortex cores
  In this file we are still using 4 in stead of (int)sizeof(float)
@@ -14,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <initializer_list>
 
 namespace lint {
 
@@ -39,6 +45,31 @@ public:
         storage = (T*)malloc(size);
         memset(storage, 0, size);
         totalSize = size;
+    }
+    //Copy constructor
+    darray(const darray& d) : storage(d.storage), index(d.index), totalSize(d.totalSize),
+                              space_used(d.space_used)  {
+        
+    }
+    //Copy operator=
+    darray& operator=(const darray& d) {
+        storage(d.storage);
+        index(d.index);
+        totalSize(d.totalSize);
+        space_used(d.space_used);
+    }
+    //Move constructor
+    darray(darray& d) noexcept : storage(d.storage), index(d.index), totalSize(d.totalSize),
+                                 space_used(d.space_used) {
+        inflate(d.length());
+        for(int i=0; i<d.length(); i++) {
+            *(storage + (index + i)) = *(d.storage + i);    //in c++ objects of the same type can access privates
+        }                                                   //privates and protected of each other
+        d.index = {};
+        d.totalSize = {};
+        d.space_used = d.index * static_cast<int>(sizeof(T));  //implementation, initialisation
+        free(d.storage);
+        d.storage = nullptr;
     }
     void append(T element) {
         if((totalSize - space_used) < 8) inflate(8);
@@ -111,8 +142,11 @@ public:
     T& operator[](int indx) {
         return *(storage + indx);
     }
-    darray& operator+(const darray& fda) {
-        
+    darray& operator+(const darray& d) {
+        inflate(d.length());
+        for(int i=0; i<d.length(); i++) {
+            *(storage + (index + i)) = *(d.storage + i);
+        }
         return *this;
     }
     void print() {
@@ -187,17 +221,10 @@ int main(int arc, const char* argv[]) {
     dar1.print();
     std::cout << dar1.length() << std::endl;
     std::cout << dar1.at(4) << " " << dar1[4] << std::endl;
+    puts("\n######################### main methods #########################\n");
+    lint::darray<int> iar2 = iar1;  //Copy constructor
+    lint::darray<int> iar3;
     return 0;
     
 }
-
-
-
-
-
-
-
-
-
-
 

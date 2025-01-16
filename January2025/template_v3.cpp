@@ -1,5 +1,10 @@
 /*
- In this file
+ In this file we still avoiding the the abstractions
+ and ownership issues. By ownership I mean
+ ownership by the object(object can delete inner parts)
+ ownership by client programmer: your library container returns
+ its content and transfer ownership(responsability to delete(to aavoid leaks for example))
+ to a client code (Code outside your library code)
  This is still line namespace to use everywhere, especially
  on arduino boards, those with AVR8 and ARM cortex cores
  In this file we are still using 4 in stead of (int)sizeof(float)
@@ -14,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <initializer_list>
 
 namespace lint {
 
@@ -27,9 +33,19 @@ class darray {
     //this is not very readable, but for a better readability overall down the line
     int space_used {index * static_cast<int>(sizeof(T))};  //implementation, initialisation
     void inflate(int inc = 8) {
+        printf("inc %i\n", inc);
+        //for(int i=0; i<4; i++) {
+        //    printf("%g ", *(storage + i));
+        //}
+        //printf("\nkhgfjhtr");
         T* temp = (T*)malloc(space_used + inc);
         memset(temp, 0, space_used + inc);
-        memcpy(temp, storage, space_used);
+        //memcpy(temp, storage, 16);    //doesn't work!! with size_t converted into int!!!
+        for(int i=0; i<index; i++)  *(temp + i) = *(storage + i);
+        
+        //for(int i=0; i<4; i++) {
+        //    printf("%g ", *(temp + i));
+        //}
         free(storage);
         storage = temp;
         totalSize = space_used + inc;
@@ -40,21 +56,53 @@ public:
         memset(storage, 0, size);
         totalSize = size;
     }
+    //Copy constructor
+    darray(const darray& d) : storage((T*)malloc(d.totalSize)), index(d.index), totalSize(d.totalSize),
+                              space_used(d.space_used)  {
+        for(int i=0; i<d.length(); i++) {
+            *(storage + i) = *(d.storage + i);
+            }
+    }
+    //Copy operator=
+    darray& operator=(const darray& d) {
+        storage = d.storage;
+        index = d.index;
+        totalSize = d.totalSize;
+        space_used = d.space_used;
+        return *this;
+    }
+    //Move constructor
+    darray(darray& d) noexcept : storage((T*)malloc(d.totalSize)), index(d.index), totalSize(d.totalSize),
+                                 space_used(d.space_used) {
+        inflate(d.length());
+        for(int i=0; i<d.length(); i++) {
+            *(storage + (index + i)) = *(d.storage + i);    //in c++ objects of the same type can access privates
+        }                                                   //privates and protected of each other
+        d.index = {};
+        d.totalSize = {};
+        d.space_used = d.index * static_cast<int>(sizeof(T));  //implementation, initialisation
+        free(d.storage);
+        d.storage = nullptr;
+    }
     void append(T element) {
         if((totalSize - space_used) < 8) inflate(8);
         *(storage + index) = element;
         index++;
     }
     void append(T element_array[], int a_element_size) {
-        if((totalSize - space_used) < a_element_size) inflate(a_element_size * sizeof(T));
+        printf("element size %i\n", a_element_size);
+        if((totalSize - space_used) < (a_element_size * sizeof(T))) inflate(a_element_size * sizeof(T));
+        //for(int i=0; i<4; i++) {
+        //    printf("%g ", *(storage + i));
+        //}
         T* ptr = storage + index;
         for(int i=0; i < a_element_size; i++) {
-            *ptr = element_array[i];
+            *ptr = element_array[i ];
             //printf("pointer is %p element is %f\n", ptr, *ptr);
             ptr++;
             index++;
         }
-        free(ptr);
+        ptr = nullptr;
     }
     int length() const {
         return index;
@@ -72,7 +120,7 @@ public:
         printf("storage is now %p\n", storage);
         printf("the index is now %i\n", index);
         printf("the total size is now %i\n", totalSize);
-        float* ptr = storage + index;
+        T* ptr = storage + index;
         for(int i=index; i>=indx; i--) {
             printf("the i is %i\n", i);
             printf("ptr is  %p\n", ptr);
@@ -111,8 +159,11 @@ public:
     T& operator[](int indx) {
         return *(storage + indx);
     }
-    darray& operator+(const darray& fda) {
-        
+    darray& operator+(const darray& d) {
+        inflate(d.length());
+        for(int i=0; i<d.length(); i++) {
+            *(storage + (index + i)) = *(d.storage + i);
+        }
         return *this;
     }
     void print() {
@@ -134,7 +185,7 @@ int main(int arc, const char* argv[]) {
     
     lint::darray<float> fa1;
     
-
+    
     fa1.append(5.5f);
     fa1.append(3.5f);
     fa1.append(2.5f);
@@ -158,10 +209,21 @@ int main(int arc, const char* argv[]) {
     fa1.print();
     printf("index is %i\n", fa1.length());
     printf("float is %f\n", fa1[2]);
-    puts("\n#########################################################\n");
-    float ff1[] = {1.3, 5.3, 7.4, 4.2, 8.9};
-    fa1.append(ff1, 5);
     fa1.print();
+    puts("\n#########################################################\n");
+    
+    float ff1[] = {1.3f, 5.3f, 7.4f, 4.2f, 8.9f};
+    fa1.append(ff1, static_cast<int>(sizeof(ff1)/sizeof(*ff1)));
+    fa1.print();
+    printf("float %f at index %i\n", fa1.at(3), 3);
+    lint::darray<float> fa2 = fa1 + fa1;
+    fa2.print();
+    /*
+    lint::darray<float> fa2 = fa1;
+    
+    lint::darray<float> fa3 = fa2 + fa1;
+    fa2.print();
+    fa3.print();
     
     puts("\n######################## insert(float f, int indx); ##########################\n");
     
@@ -187,17 +249,14 @@ int main(int arc, const char* argv[]) {
     dar1.print();
     std::cout << dar1.length() << std::endl;
     std::cout << dar1.at(4) << " " << dar1[4] << std::endl;
+    puts("\n######################### main methods #########################\n");
+    lint::darray<int> iar2 = iar1;  //Copy constructor
+    lint::darray<int> iar3;
+    
+    iar3 = iar2 + iar1;
+    iar3.print();
+     */
     return 0;
     
 }
-
-
-
-
-
-
-
-
-
-
 
