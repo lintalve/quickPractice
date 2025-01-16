@@ -4,6 +4,9 @@
  In this file we are still using 4 in stead of (int)sizeof(float)
  We can read v float float float from a .obj file into storage
  to be as simple and explicit as we can
+ 
+ In this file we are getting rid of 2 indexes 'index' and 'last'
+ relying on --index, index--, ++index and index++
  */
 
 #include <stdio.h>
@@ -16,58 +19,56 @@ class FloatDynoArray {
                 //this is an implementation, not to make sense to a user
     static const int size = 8;
     float* storage = nullptr;
-    int index {};     //stores location of the next element after existing
-    int last {};      //stores the index of the last element
+    int index {};     //stores location of the next element after, not current one
     int totalSize {};
-    int usedSpace {};
+    //this is not very readable, but for a better readability overall down the line
+    int space_used {index * static_cast<int>(sizeof(float))};  //implementation
 public:
-    FloatDynoArray() : usedSpace(index * 4) {
+    FloatDynoArray() {
         storage = (float*)malloc(size);
         memset(storage, 0, size);
         totalSize = size;
     }
     void inflate(int inc = 4) {
-        float* temp = (float*)malloc(index * 4 + inc);
-        memset(temp, 0, index * 4 + inc);
-        memcpy(temp, storage, index * 4);
+        float* temp = (float*)malloc(space_used + inc);
+        memset(temp, 0, space_used + inc);
+        memcpy(temp, storage, space_used);
         free(storage);
         storage = temp;
-        totalSize = index * 4 + inc;
+        totalSize = space_used + inc;
     }
     void append(float f) {
-        if((totalSize - (index * 4)) < 4) inflate(8);
+        if((totalSize - space_used) < 4) inflate(8);
         *(storage + index) = f;
-        last = index;
         index++;
     }
     void append(float ff[], int a_element_size) {
-        if((totalSize - index * 4) < a_element_size) inflate(a_element_size * 4);
+        if((totalSize - space_used) < a_element_size) inflate(a_element_size * 4);
         float* ptr = storage + index;
         for(int i=0; i < a_element_size; i++) {
             *ptr = ff[i];
             printf("pointer is %p element is %f\n", ptr, *ptr);
             ptr++;
-            last++;
             index++;
         }
-        usedSpace += a_element_size * 4;
         ptr = nullptr;
         puts("\n");
     }
     bool isObj(const char* path) const {   //this pointer is copied inside the function;
-        char* localpath = (char*)path;
+        char* localpath = (char*)path;     //if I were to use the parameter??    ???
         int length {};
         while(*localpath != '\0') {
             length++;
-            localpath++;
+            localpath++;    //incrementing the pointer, that means need to reset it afterwards
         }
         printf("length is %i\n", length);
-        //   RESET the const char* path POINTER!!
-        localpath = (char*)path + (length-1);
+        //reverse the order of incrementation to decrementation
+        localpath = (char*)path + --length;
         char ext[4];
         for(int i=3; i>=0; i--) {
             ext[i] = *localpath;
             printf("%c ", *localpath);
+            printf("%c ", ext[i]);
             localpath--;
         }
         
@@ -98,12 +99,12 @@ public:
                     //float strtof(const char *nptr, char **endptr);
                     d1 = strtod(arr1, NULL);
                     //code from append float
-                    if((totalSize - (index * 4)) < 4) inflate(8);
-                    *(storage + index) = (float)d1;
-                    last = index;
+                    if((totalSize - space_used) < 4) inflate(8);
+                    *(storage + index) = static_cast<float>(d1);
                     index++;
                     printf("\ndouble printed as float %f\n", d1);
                     //=======================
+                    
                     int k = i+1;
                     int l = 0;
                     char arr2[13] {};
@@ -118,9 +119,8 @@ public:
                     //float strtof(const char *nptr, char **endptr);
                     d2 = strtod(arr2, NULL);
                     //code from append float
-                    if((totalSize - (index * 4)) < 4) inflate(8);
+                    if((totalSize - space_used) < 4) inflate(8);
                     *(storage + index) = (float)d2;
-                    last = index;
                     index++;
                     printf("\ndouble printed as float %f\n", d2);
                     //=======================
@@ -139,11 +139,11 @@ public:
                     //float strtof(const char *nptr, char **endptr);
                     d3 = strtod(arr3, NULL);
                     //code from append float
-                    if((totalSize - (index * 4)) < 4) inflate(8);
+                    if((totalSize - space_used) < 4) inflate(8);
                     *(storage + index) = (float)d3;
-                    last = index;
                     index++;
                     printf("\ndouble printed as float %f\n", d3);
+                    
                     //=======================
                     
                     puts("\n");
@@ -156,11 +156,10 @@ public:
         }
     }
     int getIndex() const {
-        return index;
+        //return --index;  //can't do, const method, incrementing a member
+        return index - 1;
     }
-    int getLast() const {
-        return last;
-    }
+
     float* getStorage() const {
         return storage;
     }
@@ -172,7 +171,6 @@ public:
         printf("entering insert float function\n");
         printf("storage is now %p\n", storage);
         printf("the index is now %i\n", index);
-        printf("the last is now %i\n", last);
         printf("the total size is now %i\n", totalSize);
         float* ptr = storage + index;
         for(int i=index; i>=indx; i--) {
@@ -183,12 +181,10 @@ public:
         }
         printf("storage is now %p\n", storage);
         printf("the index is now %i\n", index);
-        printf("the last is now %i\n", last);
         printf("the total size is now %i\n", totalSize);
         printf("exiting insert float function\n");
         *(storage + indx) = f;
         ptr = nullptr;
-        last++;
         index++;
         puts("\n");
     }
@@ -203,7 +199,6 @@ public:
         for(int i=0; i < amountAfter; i++) {
              *(storage + indx + i) = *(storage + indx + i + 1);   //stepping with 4 bytes steps
         }
-        last--;
         index--;
         return f;
         
@@ -276,11 +271,12 @@ int main(int arc, const char* argv[]) {
     fa1.print();
     puts("\n######################## readObj(); ##########################\n");
     fa1.isObj(".obj");
-    fa1.readObj_v("cube1.obj");
+    fa1.readObjv("cube1.obj");
     fa1.print();
     return 0;
     
 }
+
 
 
 
