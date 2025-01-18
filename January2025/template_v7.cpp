@@ -182,7 +182,7 @@ public:
         //printf("the total size is now %zu\n", totalSize);
         //inflate(d.length());
         int temp_index = index + d.index;
-        T* temp_storage = (T*)malloc(temp_index);
+        T* temp_storage = (T*)malloc(temp_index + 8);
         for(int i=0; i<index; i++) {
             //printf("the storage is now %p\n", storage + (index + i));
             //printf("the one is now %i\n", *(storage + (index + i)));
@@ -193,15 +193,15 @@ public:
             //printf("the storage is now %p\n", storage + (index + i));
             //printf("the one is now %i\n", *(storage + (index + i)));
             //printf("the other is now %i\n", *(d.storage + i));
-            *(temp_storage + (index + i)) = *(d.storage + i );
+            *(temp_storage + (index + i)) = *(d.storage + i);
         }
         for(int i=0; i<temp_index; i++) {
-            printf("%i ", *(storage + i));
+            printf("%i ", *(temp_storage + i));
         }
         puts("\nend of op+ inner test\n");
         //printf("the index is now %i\n", index);
         //printf("the total size is now %zu bytes\n", totalSize);
-        return darray<T>(storage, index, totalSize);    //because I don't have the apropriate constructor
+        return darray<T>(temp_storage, index, totalSize);    //because I don't have the apropriate constructor
     }
     void print() {
         for(int i=0; i<index; i++) {
