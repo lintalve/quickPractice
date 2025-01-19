@@ -77,31 +77,50 @@ class darray {
     }
 public:
     class iterator {
-        lint::darray& da;  //possible because the class is nested
+        lint::darray<T>& da;  //possible because the class is nested
         int i {};
+    public:
         //let's begin with constructors
-        iterator(const darray& d) da(d) {} //not going to change incoming d
+        iterator(darray& d) : da(d) {} //not going to change incoming d
         //to create the "end sentinel" iterator
-        iterator(const darray& d, bool) : da(d), i(index) {}
+        //bool paramenter is a dummy, not used,
+        //there just to buypass overloading rule
+        iterator(darray& d, bool) : da(d), i(d.index) {}
         T operator*() const { return da[i]; }
         T operator++() {
-            if(i < index) {
-                return d[++i];
+            if(i < da.index) {
+                return da[++i];
             } else { throw myException("iterator out of range"); }
             
         }
-        T operator++() {
-            if(i < index) {
-                return d[i++];
+        //int parameter is a dummy
+        T operator++(int) {
+            if(i < da.index) {
+                return da[i++];
             } else { throw myException("iterator out of range"); }
         }
         iterator& operator+=(int amount) {
-            if(i + amount < index) {
+            if(i + amount < da.index) {
                 i+=amount;
                 return *this;
             } else { throw myException("iterator out of range"); }
         }
+        bool operator==(const iterator& end) {
+            return i == end.i;
+        }
+        bool operator!=(const iterator& end) {
+            return i != end.i;
+        }
+        friend std::ostream& operator <<(std::ostream& os, const iterator& it) {
+            return os << *it;
+        }
     };
+    iterator begin() {
+        return iterator(*this);
+    }
+    iterator end() {
+        return iterator(*this, true);
+    }
     darray(std::initializer_list<T> values) {
         inflate(values.size() * sizeof(T));
         T* temPtr = storage + index;
@@ -352,7 +371,15 @@ int main(int arc, const char* argv[]) {
     iar6 += iar1;
     iar6 += {9, 8, 7, 6, 5, 4, 3, 2, 1};
     iar6.print();
-    
+    puts("\n######################### iterator #########################\n");
+    std::cout << iar6.begin() << std::endl;
+    auto it = iar6.begin();
+    it++;
+    std::cout << it << " " << *it << std::endl;
+    it += 4;
+    std::cout << it << " " << *it << std::endl;
+    for(auto it = iar6.begin(); it != iar6.end(); it++) std::cout << *it << ' ';
+    puts("\n");
     puts("\n#########################DOUBLE#########################\n");
     lint::darray<double> dar1;
     
