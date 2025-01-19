@@ -379,6 +379,7 @@ int main(int arc, const char* argv[]) {
     it += 4;
     std::cout << it << " " << *it << std::endl;
     for(auto it = iar6.begin(); it != iar6.end(); it++) std::cout << *it << ' ';
+    it+= 45;
     puts("\n");
     puts("\n#########################DOUBLE#########################\n");
     lint::darray<double> dar1;
