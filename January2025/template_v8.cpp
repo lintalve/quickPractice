@@ -195,23 +195,26 @@ public:
             //printf("the other is now %i\n", *(d.storage + i));
             *(temp_storage + (index + i)) = *(d.storage + i);
         }
-        for(int i=0; i<temp_index; i++) {
-            printf("%i ", *(temp_storage + i));
-        }
-        puts("\nend of op+ inner test\n");
+        //for(int i=0; i<temp_index; i++) {
+        //    printf("%i ", *(temp_storage + i));
+        //}
+        //puts("\nend of op+ inner test\n");
         //printf("the index is now %i\n", index);
         //printf("the total size is now %zu bytes\n", totalSize);
         return darray<T>(temp_storage, temp_index, totalSize + d.totalSize);    //because I don't have the apropriate constructor
     }
     void print() {
         for(int i=0; i<index; i++) {
-            printf("%i ", *(storage + i));
-            //std::cout << *(storage + i) << " ";
+            //printf("%i ", *(storage + i));
+            std::cout << *(storage + i) << " ";
         }
     puts("\n");
     }
     friend std::ostream& operator<<(std::ostream& os, darray& d) {
-        return os << "Works beatch";
+        for(int i=0; i<d.index; i++) {
+            std::cout << *(d.storage + i) << " ";
+        }
+        return os << std::endl;;
     }
     ~darray() {
         free(storage);
@@ -288,7 +291,8 @@ int main(int arc, const char* argv[]) {
     
     lint::darray<int> iar5 = iar1 + iar4;
     iar5.print();
-    /*
+    std::cout << iar5;
+    
     puts("\n#########################DOUBLE#########################\n");
     lint::darray<double> dar1;
     
@@ -311,7 +315,6 @@ int main(int arc, const char* argv[]) {
     //std::cout << dar1.at(4) << " " << dar1[4] << std::endl;
     //puts("\n######################### main methods #########################\n");
     //lint::darray<int> dar2 = dar1;  //Copy constructor
-    */
     
     return 0;
     
