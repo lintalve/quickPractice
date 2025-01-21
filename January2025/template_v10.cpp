@@ -273,14 +273,14 @@ public:
         }
         return *this;
     }
-    void print() {
+    void print() const {
         for(int i=0; i<index; i++) {
             //printf("%i ", *(storage + i));
             std::cout << *(storage + i) << " ";
         }
     puts("\n");
     }
-    friend std::ostream& operator<<(std::ostream& os, darray& d) {
+    friend std::ostream& operator<<(std::ostream& os, const darray& d) {
         for(int i=0; i<d.index; i++) {
             std::cout << *(d.storage + i) << " ";
         }
