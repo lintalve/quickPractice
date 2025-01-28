@@ -31,7 +31,7 @@ public:
         // To create the "end sentinel" iterator:
         iterator(StackTemplate& st, bool) : s(st), index(s.top) {}
         T operator*() const { return s.stack[index];}
-        T operator++() {
+        T operator++() {+++++
             // Prefix form
             require(index < s.top, "iterator moved out of range");
             return s.stack[++index];

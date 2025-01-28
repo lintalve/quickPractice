@@ -8,34 +8,11 @@
 #include <string>
 #include <format>
 #include <initializer_list>
-#include <exception>
 
 #define ALGO 1
 static const int size = 9;
 
 namespace lint {
-
-class MyException : public std::exception {
-    std::string message {};
-public:
-    MyException(const std::string& s) : message(s) {
-        
-    }
-    const char* what() {
-        return message.c_str();
-    }
-};
-
-class Vector2 {
-public:
-    static const int size = 2;
-    double vec[2];
-
-    Vector2() { vec[0] = vec[1] = 3.0; }
-    Vector2(double x, double y) { vec[0] = x; vec[1] = y; }
-};
-
-
 
 class Vector3{
     static const int size = 3;
@@ -115,16 +92,6 @@ public:
         vector[2] *= rvint;
         return *this;
     }
-    double operator[](int index) const {
-        if(index > 2 || index < 0) throw MyException("index is out of bound");
-        return vector[index];
-    }
-    //needs not to have a return value
-    //The temporary Vector2(x, y) is not const, but it can only be accessed in the current expression unless bound to a reference.
-    operator lint::Vector2() const {     //needs to be const
-        return lint::Vector2();     //needs to return with parenthes (for u-d objects) because the constructor must be called
-                                    //to create temporary object, and not be merely a declaration such as Vector2 vec;
-    }                               //which is a declaration of the variable vec;
     double magnitude(){
         return sqrt(vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2]);
     }
@@ -141,7 +108,6 @@ public:
                        vector[2]*v.getX() - vector[0]*v.getZ(),
                        vector[0]*v.getY() - vector[1]*v.getX());
     }
-    
     /*
      bool operator<(const Vector3& v) const {
      return magnitude() < v.magnitude() ? true : false;
@@ -352,12 +318,8 @@ lint::Vector3 func6(lint::Vector3& vec) {   //here we breaking the reference by 
 }
 //here is another example
 const lint::Vector3& func7() {
-    lint::Vector3 vec1;
-    return vec1;
-}
-
-void func8(lint::Vector2 v) {
-    printf(" qwerl %f\n", v.vec[1]);
+    lint::Vector3 vec1;          //warning: reference to stack memory associated with local variable 'vec1' returned
+    return vec1;                 //returning a reference to stack variable, that about to disappear
 }
 int main() {
     //using typedef just for the heck of it
@@ -419,38 +381,8 @@ int main() {
                                            //hense loss of constnes,
                                            //to rectify we pass a non const ref or an obj
                                            //let;s do both
-    std::cout << vec3[1] << std::endl;
-    
-    func8(vec3);
-    
-    Vector2 vec22;     //no constructor is called?
-    Vector2 vec23();
-    Vector2 vec24 {}; //default constructor is called
-    Vector2 vec25(2.5, 6.3);
-    Vector2 vec26 = vec23; //copy constructor is called
-    vec25 = vec23; //operator = is called
-                   //both lvalues
-    vec27 = Vector2(2.8, 5.3);   //lvalue and rvalue
-    const Vector2& ref = Vector2(1.0, 2.0); // OK   //beaves like const
-    
-    Vector2 vec27;
-    
-    const Vector2& result = vec23 + vec24 + vec28 + vec26 + vec27 + vec29; //By binding it to ref2, you extend
-                                                                         //its lifetime until ref2 goes out of scope.
-    //so this result, you can pass it around untill the return statement, end of scope when it would be cleared
-    //for perfomace, no need to copy construct like const Vector2 vec 29 = vec23 + ... + vec27
-    //for games and stuff;
-    //for algorithms that depend on math for openGL, for fluid simulations
-    
-    //const T&  not modifiable, to pass result around
-    const Vector2& ref2 = vec25 + vec24 + vec28 + vec26 + vec27 + vec29;
-    
-    //RValue reference, modifiable
-    Vector2&& ref2 = vec25 = vec23 + vec24 + vec28 + vec26 + vec27 + vec29;
-    
-    //uniform reference,
-    auto&& uniref = vec25 = vec23 + vec24 + vec28 + vec26 + vec27 + vec29;
-    
+
     
     return 0;
 }
+

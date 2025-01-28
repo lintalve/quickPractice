@@ -24,6 +24,13 @@
  this template is meant for inbuilt types, no more than 8 bytes
  */
 
+/*
+ Use friend only when absolutely necessary to allow direct access to private members.
+ If the iterator can work with public member functions or other publicly exposed mechanisms,
+ you don't need to declare it as friend.
+ This approach is cleaner and adheres more closely to encapsulation principles.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
