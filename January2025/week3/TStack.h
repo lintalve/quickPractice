@@ -13,10 +13,7 @@ class Stack {
     
     public:
     Stack() : head(0) {}
-    ~Stack(){
-        while(head)
-            delete pop();
-    }
+    
     void push(T* dat) {
         head = new Link(dat, head);
     }
@@ -30,6 +27,10 @@ class Stack {
         head = head->next;
         delete oldHead;
         return result;
+    }
+    ~Stack(){
+        while(head)           //algorithmic, compact, consice. While(actual current Link* head;)
+            delete pop();     //next fetch another Link* head from container and delete it;
     }
 };
 
