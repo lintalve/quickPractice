@@ -27,7 +27,7 @@ public:
     public:
         iterator(const Stack<T>& tl) : p(tl.head) {}
         // Copy-constructor:
-        iterator(const iterator& tl) : p(tl.p) {}
+        iterator(const iterator& it) : p(it.p) {}
         // The end sentinel iterator:
         iterator() : p(0) {}
         // operator++ returns boolean indicating end:

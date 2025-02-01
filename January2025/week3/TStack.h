@@ -1,5 +1,6 @@
 //: C16:TStack.h
 // The Stack as a template
+//
 #ifndef TSTACK_H
 #define TSTACK_H
 template<class T>
