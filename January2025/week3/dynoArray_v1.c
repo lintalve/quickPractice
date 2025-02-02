@@ -50,5 +50,6 @@ int main(int argc, const char* argv[]) {
     da_append(&da, 78.75f);
     printf("float is %f\n", *(da.storage)); //prints   354.339999
     printf("float is %g\n", *(da.storage + 2));
+    ывfffff
     return 0;
 }

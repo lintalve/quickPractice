@@ -174,7 +174,7 @@ int main(int argc, const char* argv[]) {
     std::getline(stream& s, std::string& line);  //reads line up to '\n' or EOF into string
     
     std::cout << "##################### -STD=C++14 ######################" << std::endl;
-    //.std::to_string();
+    //std::to_string();
     
     //std::operator""s
     using namespace std::string_literals; // Required for operator""s
@@ -210,7 +210,7 @@ int main(int argc, const char* argv[]) {
     std::string str23_2 = "another string data with some meaning";
     
     str23_1.compare();
-    str23_1.insert_range();
+    
     str23_2.append_range();
     str23_2.replace_with_range();
     str23_2.resize_and_overwrite();

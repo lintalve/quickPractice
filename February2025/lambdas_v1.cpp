@@ -29,6 +29,11 @@ int main() {
         while((c = *temp) != '\0') {  temp++; i++; }
         return i;
     } () << " is the length of the string" << std::endl;
+    
+    //lambdas are immutable by default, meaning you can't mutate variables captured by value
+    int x {6};
+    someFloat = 60.5;
+    std::cout << [someFloat, x] () mutable { return someFloat*= static_cast<float>(x);} () << std::endl;
 
     return 0;
 }
