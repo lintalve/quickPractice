@@ -1,0 +1,3 @@
+/Users/lintalve/Documents/projects/c/quick_practice/April2023/thinking/static/build/CMakeFiles/static.dir
+/Users/lintalve/Documents/projects/c/quick_practice/April2023/thinking/static/build/CMakeFiles/edit_cache.dir
+/Users/lintalve/Documents/projects/c/quick_practice/April2023/thinking/static/build/CMakeFiles/rebuild_cache.dir
