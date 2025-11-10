@@ -15,14 +15,16 @@ public:                             //copy constructor
 };
 
 char function(const char* str = nullptr) {   //default argument
-    static const char* string_data = nullptr;   //defines only once, then a run-time assignment happens
-    char c;
-    if(str != nullptr) {
-        string_data = str;
-        return ((c = *string_data++) != '\0') ? c : 0;
+    static const char* string_data = nullptr;
+    
+    if(str != nullptr) string_data = str;
+    
+    
+    if(string_data == nullptr || *string_data == '\0') {
+        return 102;
     }
     
-    return ((c = *string_data++) != '\0') ? c : 0;
+    return *string_data++;
 }
 
 const char* s = "abcde"; //fghijklmnopqrstuvwxyz";
@@ -40,4 +42,5 @@ int main() {
     
     return 0;
 }
+
 

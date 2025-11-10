@@ -22,9 +22,9 @@ int main(int argc, const char* argv[]) {
     std::cout << str3.substr(8, 9);  //should produce "wonderful"
     
     std::cout << "##################### CAPACITY ######################" << std::endl;
-    empty
+    //empty
     std::cout << "str2 capacity is " << str2.capacity() << std::endl;
-    str2.reserve(512);
+    str2.reserve(512); //set capacity to 512
     std::cout << "str2 capacity after reserve is " << str2.capacity() << std::endl;
     
     std::cout << "##################### SIZING ######################" << std::endl;
