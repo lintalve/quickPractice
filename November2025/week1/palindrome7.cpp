@@ -9,7 +9,7 @@ std::string palindrome(const std::string& s) {
     for (int i=0; i<s.size(); i++) {
         char c = s.at(i);  //not used
         int count {};
-        int length {};
+        int max_length {};
         int j {1};
         while (i-j >= 0 && i+j < s.size() && s.at(i+j) == s.at(i-j)) {
     
@@ -23,17 +23,21 @@ std::string palindrome(const std::string& s) {
             count++;
             j++;
         }
+        max_length = count > max_length ? count : max_length;
+        if(word.length() > 0) palindromes.insert({count, word});
+        count = 0;
         int k {};
         while (i-k >= 0 && i+k+1 < s.size() && s.at(i-k) == s.at(i+k+1)) {
             word.insert(0, 1, s.at(i - k));
+            count++;
             word.push_back(s.at(i + k + 1));
+            count++;
             k++;
-            count = k > count ? k : count;
         }
-        length = count > length ? count : length;
-        count = 0;
+        max_length = count > max_length ? count : max_length;
         if(word.length() > 0) palindromes.insert({count, word});
         word.clear();
+        count = 0;
     }
     auto it = std::prev(palindromes.end());  // iterator to last (largest key)
     return it->second;
@@ -41,7 +45,7 @@ std::string palindrome(const std::string& s) {
 
 
 int main(int argc, const char* argv[]) {
-    std::string string = "otenetar";
+    std::string string = "otenetarotennetar";
     std::cout << palindrome(string) << std::endl;
     return 0;
 }
